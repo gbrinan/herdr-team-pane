@@ -1,0 +1,6 @@
+Team Pane for Herdr
+Copyright 2026 gbrinan
+
+Team Pane (mods/team-pane) is derived from the `pane` mod shipped with the Herdr app
+(https://herdr.dev, Apache License 2.0). The Team Cockpit layout is derived from Herdr's
+`main` layout (Apache License 2.0).

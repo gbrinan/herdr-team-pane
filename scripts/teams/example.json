@@ -1,0 +1,10 @@
+{
+  "name": "team",
+  "folder": ".",
+  "grid": { "rows": 1, "cols": 3 },
+  "panes": [
+    { "slot": 1, "name": "plan", "title": "Planner", "role": "planner", "color": "#D97757" },
+    { "slot": 2, "name": "write", "title": "Writer", "role": "writer", "color": "#5E8D7A" },
+    { "slot": 3, "name": "review", "title": "Reviewer", "role": "reviewer", "color": "#B99A45" }
+  ]
+}

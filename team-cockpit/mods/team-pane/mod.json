@@ -1,0 +1,8 @@
+{
+  "place": "none",
+  "title": "Team Pane",
+  "cloned_from": {
+    "name": "pane",
+    "version": "0.1.15"
+  }
+}
