@@ -9,10 +9,12 @@ uses it, and a script that starts a whole team in one go.
 | Folder | What | Gallery |
 |---|---|---|
 | [`team-pane/`](team-pane/) | **Team Pane** mod: the pane header, with a team editor | `herdr-mod` |
-| [`team-cockpit/`](team-cockpit/) | **Team Cockpit** layout: Herdr's main window with Team Pane headers | `herdr-layout` |
+| [`team-cockpit/`](team-cockpit/) | **Team Cockpit** layout: Herdr's main window in black and amber, with a faint grid, Pretendard and Team Pane headers | `herdr-layout` |
 | [`scripts/`](scripts/) | `team_start.py`: one JSON file → a space, a grid of agents, roles, labels | — |
 
 Each gallery folder has a `RECIPE.md` (the brief an agent builds it from) and a `preview.png`.
+
+![Team Cockpit](team-cockpit/preview.png)
 
 ## Install
 
@@ -21,7 +23,9 @@ Ask your agent in Herdr: *"add the mod at github.com/gbrinan/herdr-team-pane/tre
 
 ```sh
 cp -r team-pane/mods/team-pane ~/.config/herdr-app/mods/
-cp team-cockpit/layouts/team-cockpit.json ~/.config/herdr-app/layouts/   # optional
+cp team-cockpit/layouts/team-cockpit.json ~/.config/herdr-app/layouts/   # the layout (optional)
+cp team-cockpit/themes/team-cockpit.json ~/.config/herdr-app/themes/      # its theme
+cp -r team-cockpit/mods/team-cockpit ~/.config/herdr-app/mods/            # its font and grid
 herdr-app check ~/.config/herdr-app/mods/team-pane
 herdr-app do layout.switch '{"name":"team-cockpit"}'
 ```
@@ -54,3 +58,4 @@ help for the team file format.
 ## License
 
 Apache-2.0. Team Pane started as a clone of Herdr's `pane` mod (Apache-2.0); see `NOTICE`.
+Pretendard (in `team-cockpit/mods/team-cockpit/fonts/`) is under the SIL Open Font License 1.1.

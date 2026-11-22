@@ -1,8 +1,10 @@
 # Team Cockpit
 
-Herdr's own window, made for running a team of agents side by side: every pane wears a Team Pane
-header with the member's name, role and color, so a 2×2 or 1×3 grid of agents reads at a glance.
-Spaces and agents stay on the left, Files and Changes on the right, as in Herdr's main layout.
+Herdr's own window, made for running a team of agents side by side, in black with one amber
+accent: every pane is a rounded card with a Team Pane header carrying the member's name, role and
+color, so a 2×2 or 1×3 grid of agents reads at a glance. A faint grid with small crosses shows in
+the gutters. Spaces and agents stay on the left, Files and Changes on the right, as in Herdr's
+main layout.
 
 ![Team Cockpit](preview.png)
 
@@ -10,19 +12,28 @@ Spaces and agents stay on the left, Files and Changes on the right, as in Herdr'
 
 Left to right:
 
-1. **Sidebar** (268 px, 44–480, `chrome` background): the Herdr brand row (46 px,
+1. **Sidebar** (268 px, 44–480, `chrome` `#0a0a0a`): the Herdr brand row (46 px,
    `workspace-chrome`), Spaces and Agents lists sharing the height (`spaces`, `agents`, at least
    90 px each), and a 69 px footer (`workspace-chrome` with `footer: true`).
 2. **Work** column: the tab bar (42 px, `tabs`), then the panes of the shown tab as cards
-   (8 px padding and gap, 10 px radius, 1 px `border`, 1 px `accent` ring on the focused pane,
-   `background` inside) beside a hidden Files / Changes panel (368 px, 280–900, a stack of
+   (14 px padding and gap, 16 px radius, 1 px `border` `#292929`, 1 px amber `#ffae00` ring on the
+   focused pane, black inside) beside a hidden Files / Changes panel (368 px, 280–900, a stack of
    `files` and `changes`), then a 28 px status bar (`workspace-status`).
 3. Each pane card's header is **Team Pane**, 30 px high, always shown, on top: the member's color
    band and wash, name, program · role, folder, status, hover buttons (see the Team Pane recipe).
 
-The window has no system title bar (`titlebar: none`); the canvas behind the cards is `canvas`;
-terminals are padded 14 × 12 px. The layout has no colors of its own beyond theme names, so it
-follows the person's theme.
+The window has no system title bar (`titlebar: none`); terminals are padded 14 × 12 px.
+
+**Look** (its own theme `team-cockpit`): black `#000` behind and inside the cards; greys `#0a0a0a`
+(chrome), `#111111` (surface), `#1a1a1a` (popover), `#1f1f1f` (raised, hover), `#292929`
+(selected, border), `#454545` (input, selection); text `#ededed`, muted `#a0a0a0`, dim `#878787`;
+one accent, amber `#ffae00`, for focus, primary buttons (black text), the cursor and `working`;
+`blocked` `#ff5a4f`, `done` `#6aa8ff`. Terminal colors: `#292929 #ff6b5f #7fd17a #ffae00 #6aa8ff
+#c792ea #5fd0d6 #d4d4d4`, bright `#878787 #ff8a80 #9fe09a #ffc94d #8fbcff #d7aef2 #86e0e4 #ffffff`.
+UI text in Pretendard (Regular, Medium, SemiBold, Bold); terminals keep the person's font.
+Background: `art/grid.png` (2560 × 1600, `cover`): black, 1 px lines `#0e0e0e` every 40 px, and a
+10 px cross `#454545` every 160 px. It shows in the gutters between cards. Team colors stay the
+members' own; amber is only for focus and actions.
 
 ## How it behaves
 
@@ -33,9 +44,15 @@ follows the person's theme.
 
 ## Built from
 
-- `layouts/team-cockpit.json`: a copy of Herdr's `main` layout (0.1.16) whose tab block uses
-  `"header": { "content": { "mod": "team-pane" }, "reveal": "always", "height": 30,
-  "position": "top" }`. Nothing else differs.
+- `layouts/team-cockpit.json`: a copy of Herdr's `main` layout (0.1.16). Root: `"theme":
+  "team-cockpit"`, `"ui_font": "Pretendard"`, `"background": { "image":
+  "mods/team-cockpit/art/grid.png", "fit": "cover" }`. `work-body`: padding 14, gap 14. Tab
+  block's pane frame: radius 16, gap 14, border 1 `border`, focus 1 `accent`, header
+  `{ "content": { "mod": "team-pane" }, "reveal": "always", "height": 30, "position": "top" }`.
+- `layouts/team-cockpit.png`: a 640 px screenshot the settings screen shows (root `"preview"`).
+- `themes/team-cockpit.json`: the theme above (named like the layout, so it is the layout's own).
+- `mods/team-cockpit/`: art only, a mod that draws nothing (`place: none`): `fonts/` (Pretendard
+  OTFs and their OFL licence, loaded by Herdr from any mod's `fonts/`) and `art/grid.png`.
 - `mods/team-pane/`: the Team Pane mod (its own recipe is in the repo's `team-pane/` folder).
 - Shipped mods it uses: `workspace-chrome`, `spaces`, `agents`, `tabs`, `files`, `changes`,
   `workspace-status`.
@@ -49,6 +66,9 @@ follows the person's theme.
 - The layout copies `main` as of Herdr 0.1.16. If a later `main` changes, clone it again
   (`layout.clone`) and set the tab block's header mod to `team-pane`.
 - Shipped mods are referenced by name, so they must exist (they ship with Herdr).
+- Install `themes/team-cockpit.json` too, or the layout falls back to the person's theme.
+- Fonts load at start or on the next look change: switch layouts once after copying them.
+- The grid only shows where nothing covers the background; wider gaps show more of it.
 
 ## Done when
 

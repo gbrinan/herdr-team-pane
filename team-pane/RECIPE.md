@@ -11,11 +11,13 @@ terminal, so they survive restarts and show on every Herdr client.
 
 One row, the full width of the pane's header (30 px in Team Cockpit), 12 px text, left to right:
 
-1. **Band**: 4 px wide, full height, flush left. The member's color. Breathes while the agent
-   works; turns the theme's `blocked` color and breathes faster when the agent needs you.
+1. **Band**: 4 px wide, full height, flush left, following the card's rounded corner. The
+   member's color. Breathes while the agent works; turns the theme's `blocked` color and breathes
+   faster when the agent needs you.
 2. **Program icon**: 14 px, from the app's program table (tinted `dim` when it is a glyph).
-3. **Name**: semibold, at most 260 px, truncated. The member's name in their color, else the
-   agent's or terminal's name in `foreground`.
+3. **Name**: semibold, at most 260 px, truncated. The member's name in their color (on a dark
+   theme lifted 30% toward white so it stays readable), else the agent's or terminal's name in
+   `foreground`.
 4. **Program · role**: only when the pane has a member name. `muted`, at most 160 px:
    `Claude Code · planner`, or just `Claude Code` without a role.
 5. **Folder**: `dim`, takes the rest, truncated; the home folder shows as `~`.
@@ -27,7 +29,8 @@ One row, the full width of the pane's header (30 px in Team Cockpit), 12 px text
 
 Background: the member's color at 12% (`#rrggbb1f`); the `blocked` color at 15% while blocked;
 else `background`. A 1 px `border` line under the header (above it when the header sits at the
-bottom).
+bottom). The header's outer corners take the pane frame's `radius` minus its border width, so the
+wash never pokes past a rounded card.
 
 The **team editor** is a 300 × 330 popup on `popover`, 16 px padding: title "Team" (14.5 px
 semibold) with the terminal's address on the right; fields **Name** and **Role** (34 px high,
@@ -76,6 +79,12 @@ the left; Cancel and Save (solid) on the right.
 - `init(props, cx)` decides the role: with `props.edit` it is the editor, otherwise the header.
   Build both from one class; Herdr opens the overlay with the same mod name.
 - Animate the band with `.loop("opacity", …)`, never a timer.
+- Children are not clipped to a rounded parent (`overflow_hidden` doesn't help), and a 4 px
+  element can't take a 16 px corner. So the band is two absolute layers inside a `relative()`
+  header: a band-colored piece `r + 8` px wide with the corner radius `r`, and over it, 4 px in, a
+  piece in `background` with the wash on top, radius `r - 4`. A 4 px in-flow spacer keeps the
+  content where the band was. Only the band piece breathes.
+- The radius comes from `layout()`: the tab block's `pane.radius` minus `pane.border.width`.
 - `herdr-app check` renders only the header; open the editor once by hand to test it.
 - Colors must be `#rrggbb` (or `#rrggbbaa`); anything else is ignored.
 

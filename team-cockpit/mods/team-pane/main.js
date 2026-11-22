@@ -13,7 +13,7 @@
 
 import { View, div, svg, image } from "gpui-kit";
 import { h_flex } from "gpui-base";
-import { panes, props, run, theme, home, layout, terminals, openOverlay, focused, nextCommand } from "herdr";
+import { panes, props, run, theme, home, layout, terminals, openOverlay, focused, nextCommand, settings } from "herdr";
 import { initEditor, renderEditor, validColor } from "./editor.js";
 
 function teamLabels(address) {
@@ -36,6 +36,14 @@ function paneFrame(node) {
     if (frame) return frame;
   }
   return null;
+}
+
+// On a dark theme the member's color is lifted toward white (30%) so the name stays readable.
+function nameColor(c) {
+  if (!c || !settings()?.dark) return c;
+  const n = parseInt(c.slice(1, 7), 16);
+  const lift = (v) => Math.round(v + (255 - v) * 0.3).toString(16).padStart(2, "0");
+  return "#" + lift(n >> 16) + lift((n >> 8) & 255) + lift(n & 255);
 }
 
 function icon(p, size, color) {
@@ -111,21 +119,35 @@ export default class Pane extends View {
     const pic = icon(p.program, 14, t.dim);
     const st = p.status;
     const pane = p.pane;
-    const bottom = paneFrame(layout())?.header?.position === "bottom";
+    const frame = paneFrame(layout());
+    const bottom = frame?.header?.position === "bottom";
+    // Follow the card's rounding so the wash and band stay inside its corners (inset by its border).
+    const r = Math.max(0, (Number(frame?.radius) || 0) - (Number(frame?.border?.width) || 0));
     // The band: blocked wins (it needs you), then the member's color, then "working".
     const bandColor = st === "blocked" ? t.blocked : teamColor ?? (st === "working" ? t.working : null);
     const wash = st === "blocked" ? t.blocked + "26" : teamColor ? teamColor + "1f" : t.background;
-    const band = div().w(4).h_full().flex_none().bg(bandColor ?? t.background)
-      .when(st === "working", (el) => el.loop("opacity", { from: 0.35, to: 1, period: 1600 }))
-      .when(st === "blocked", (el) => el.loop("opacity", { from: 0.4, to: 1, period: 700 }));
+    // Children aren't clipped to rounded corners, so the band is two layers that follow the curve:
+    // a band-colored corner piece, and over it, 4 px in, a piece in the header's own color.
+    const corner = (el, rad) => (rad <= 0 ? el : bottom ? el.rounded_bl(rad) : el.rounded_tl(rad));
+    const inner = Math.max(0, r - 4);
+    const layers = bandColor ? [
+      corner(div().absolute().top(0).bottom(0).left(0).w(r + 8).bg(bandColor), r)
+        .when(st === "working", (el) => el.loop("opacity", { from: 0.35, to: 1, period: 1600 }))
+        .when(st === "blocked", (el) => el.loop("opacity", { from: 0.4, to: 1, period: 700 })),
+      corner(div().absolute().top(0).bottom(0).left(4).w(r + 8).bg(t.background), inner)
+        .child(corner(div().size_full().bg(wash), inner)),
+    ] : [];
     return h_flex()
       .id(`pane-head-${pane}`)
+      .relative()
       .size_full()
       .pr(10)
       .gap(8)
       .items_center()
       .bg(wash)
-      .child(band)
+      .when(r > 0, (el) => (bottom ? el.rounded_b(r) : el.rounded_t(r)))
+      .children(layers)
+      .child(div().w(4).h_full().flex_none())
       .when(bottom, el => el.border_t(1))
       .when(!bottom, el => el.border_b(1))
       .border_color(t.border)
@@ -133,7 +155,7 @@ export default class Pane extends View {
       .on_hover((hovered, cx) => { this.hovered = hovered; cx.notify(); })
       .on_click(() => run("pane.focus", { pane }))
       .when(Boolean(pic), (el) => el.child(pic))
-      .child(div().flex_none().truncate().max_w(260).font_semibold().text_color(teamColor ?? t.foreground).child(name))
+      .child(div().flex_none().truncate().max_w(260).font_semibold().text_color(nameColor(teamColor) ?? t.foreground).child(name))
       .when(Boolean(teamTitle), (el) => el.child(div().flex_none().truncate().max_w(160).text_color(t.muted).child(teamRole ? `${progName} · ${teamRole}` : progName)))
       .child(div().flex_1().truncate().text_color(t.dim).child(folder(p.cwd)))
       .when(st === "working", el => el.child(svg("mods/workspace-chrome/spinner.svg").size(12).flex_none().text_color(t.working).spin(900)))
