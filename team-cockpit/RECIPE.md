@@ -3,8 +3,9 @@
 Herdr's own window, made for running a team of agents side by side, in black with one amber
 accent: every pane is a rounded card with a Team Pane header carrying the member's name, role and
 color, so a 2×2 or 1×3 grid of agents reads at a glance. A faint grid with small crosses shows in
-the gutters. Spaces and agents stay on the left, Files and Changes on the right, as in Herdr's
-main layout.
+the gutters. Under the tab bar, a Team Bar takes the task and starts a team; on the right, next
+to Files and Changes, a Preview panel shows the newest output and a Checks panel runs the
+folder's checks. Spaces and agents stay on the left, as in Herdr's main layout.
 
 ![Team Cockpit](preview.png)
 
@@ -15,10 +16,11 @@ Left to right:
 1. **Sidebar** (268 px, 44–480, `chrome` `#0a0a0a`): the Herdr brand row (46 px,
    `workspace-chrome`), Spaces and Agents lists sharing the height (`spaces`, `agents`, at least
    90 px each), and a 69 px footer (`workspace-chrome` with `footer: true`).
-2. **Work** column: the tab bar (42 px, `tabs`), then the panes of the shown tab as cards
+2. **Work** column: the tab bar (42 px, `tabs`), the **Team Bar** (44 px: task field, team
+   chip, Start, Preview and Checks chips), then the panes of the shown tab as cards
    (14 px padding and gap, 16 px radius, 1 px `border` `#292929`, 1 px amber `#ffae00` ring on the
-   focused pane, black inside) beside a hidden Files / Changes panel (368 px, 280–900, a stack of
-   `files` and `changes`), then a 28 px status bar (`workspace-status`).
+   focused pane, black inside) beside a hidden side panel (368 px, 280–900, a stack of `files`,
+   `changes`, `preview` and `checks`), then a 28 px status bar (`workspace-status`).
 3. Each pane card's header is **Team Pane**, 30 px high, always shown, on top: the member's color
    band and wash, name, program · role, folder, status, hover buttons (see the Team Pane recipe).
 
@@ -40,6 +42,9 @@ members' own; amber is only for focus and actions.
 - Everything Herdr's main layout does: spaces, agents, tabs, Files, Changes, status bar.
 - Pane headers: as Team Pane. Hover a header and press the tag to name a pane, give it a role and
   a color; `team-pane.edit` does it for the focused pane from the keyboard.
+- Team Bar: type a task, Enter or Start: `team_start.py` opens a space with the team's grid.
+- Preview and Checks chips (or `team-bar.preview` / `team-bar.checks`) open and close those
+  panels; Files and Changes keep their buttons in the tab bar.
 - `ctrl-shift-l` switches layouts; the person's own layout stays as it was.
 
 ## Built from
@@ -49,20 +54,29 @@ members' own; amber is only for focus and actions.
   "mods/team-cockpit/art/grid.png", "fit": "cover" }`. `work-body`: padding 14, gap 14. Tab
   block's pane frame: radius 16, gap 14, border 1 `border`, focus 1 `accent`, header
   `{ "content": { "mod": "team-pane" }, "reveal": "always", "height": 30, "position": "top" }`.
+  `work` gets a block `team-bar` (44 px, mod `team-bar`) after `tabs`; the stack `panel-body`
+  gets blocks `preview` and `checks` after `files` and `changes`.
 - `layouts/team-cockpit.png`: a 640 px screenshot the settings screen shows (root `"preview"`).
 - `themes/team-cockpit.json`: the theme above (named like the layout, so it is the layout's own).
 - `mods/team-cockpit/`: art only, a mod that draws nothing (`place: none`): `fonts/` (Pretendard
   OTFs and their OFL licence, loaded by Herdr from any mod's `fonts/`) and `art/grid.png`.
-- `mods/team-pane/`: the Team Pane mod (its own recipe is in the repo's `team-pane/` folder).
+- `mods/team-pane/`, `mods/team-bar/`, `mods/preview/`, `mods/checks/`: the four mods (each
+  has its own recipe in the repo's folder of that name).
+- `keys.json`: for this layout only, `ctrl-shift-m` edit the pane's team, `ctrl-shift-i` type a
+  task, `ctrl-shift-r` Preview, `ctrl-shift-g` Checks.
 - Shipped mods it uses: `workspace-chrome`, `spaces`, `agents`, `tabs`, `files`, `changes`,
   `workspace-status`.
-- Optional: `scripts/team_start.py` in the repo starts a whole team (a space, a grid of panes,
-  an agent with a role in each, and the labels) from one JSON file.
+- `team_start.py` (inside `mods/team-bar/`, also `scripts/` in the repo) starts a whole team
+  (a space, a grid of panes, an agent with a role in each, and the labels) from one JSON file.
 
 ## Watch out
 
-- Team Pane runs `hc label` when you save in its editor; nothing else in the layout runs
-  programs or reaches the network.
+- Programs run only on your click: Team Pane runs `hc label` on Save; Team Bar runs
+  `team_start.py` on Start (real agents start); Checks runs the lines in the folder's
+  `herdr-checks.json` on Run and `hc send` on Ask reviewer; Preview lists files and copies the
+  shown image. Nothing reaches the network.
+- Tab-bar memory: Herdr's `tabs` remembers the side panel per space only for Files and Changes,
+  so Preview or Checks closes when you switch spaces.
 - The layout copies `main` as of Herdr 0.1.16. If a later `main` changes, clone it again
   (`layout.clone`) and set the tab block's header mod to `team-pane`.
 - Shipped mods are referenced by name, so they must exist (they ship with Herdr).
@@ -78,4 +92,6 @@ members' own; amber is only for focus and actions.
 - A pane labelled with `hc label t3 team.title=Planner team.color=#D97757` shows the orange
   header; an unlabelled pane looks like Herdr's own.
 - `python scripts/team_start.py scripts/teams/example.json` opens a space with three labelled
-  agents in a row.
+  agents in a row; so does Start in the Team Bar with that team chosen.
+- `herdr-app do team-bar.preview` shows the newest Markdown file of the folder, rendered;
+  `herdr-app do team-bar.checks` shows the Checks panel.

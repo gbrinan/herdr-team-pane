@@ -1,5 +1,8 @@
 {
-  "global": {
-    "ctrl-shift-m": "team-pane.edit"
+  "layout:team-cockpit": {
+    "ctrl-shift-m": "team-pane.edit",
+    "ctrl-shift-i": "team-bar.focus",
+    "ctrl-shift-r": "team-bar.preview",
+    "ctrl-shift-g": "team-bar.checks"
   }
 }

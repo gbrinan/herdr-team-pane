@@ -87,6 +87,16 @@
           "window_drag": true
         },
         {
+          "id": "team-bar",
+          "type": "block",
+          "content": {
+            "mod": "team-bar"
+          },
+          "size": {
+            "px": 44
+          }
+        },
+        {
           "id": "work-body",
           "type": "row",
           "children": [
@@ -140,6 +150,20 @@
                       "content": {
                         "mod": "changes"
                       }
+                    },
+                    {
+                      "id": "preview",
+                      "type": "block",
+                      "content": {
+                        "mod": "preview"
+                      }
+                    },
+                    {
+                      "id": "checks",
+                      "type": "block",
+                      "content": {
+                        "mod": "checks"
+                      }
                     }
                   ],
                   "active": "files"
@@ -174,6 +198,8 @@
     "image": "mods/team-cockpit/art/grid.png",
     "fit": "cover"
   },
+  "theme": "team-cockpit",
+  "ui_font": "Pretendard",
   "terminal_padding": [
     14,
     12
@@ -187,7 +213,5 @@
     12,
     16
   ],
-  "theme": "team-cockpit",
-  "ui_font": "Pretendard",
   "preview": "layouts/team-cockpit.png"
 }
